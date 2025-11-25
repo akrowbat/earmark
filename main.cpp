@@ -42,12 +42,6 @@ void print_tags(const char* filename)
 
 int main(int argc, char **argv)
 {
-	if (argc == 1)
-	{
-		cerr << "earmark: missing file operand" << endl;
-		cerr << "Try 'earmark --help' for more information." << endl;
-		exit(1);
-	}
 	cxxopts::Options options("earmark", "Edit audio metadata");
 
 	options.add_options()
@@ -68,6 +62,12 @@ int main(int argc, char **argv)
 	vector<string> input_files;
 	if (result.count("input_files"))
 		input_files = result["input_files"].as<vector<string>>();
+	if (input_files.empty())
+	{
+		cerr << "earmark: missing file operand" << endl;
+		cerr << "Try 'earmark --help' for more information." << endl;
+		exit(1);
+	}
 
 	if (result.count("help"))
 	{
@@ -128,68 +128,29 @@ int main(int argc, char **argv)
 	/* Check if all the files exist. */
 	for (const auto& file : input_files)
 	{
-		if (filesystem::exists(file.c_str()) == 0)
+		if (!filesystem::exists(file.c_str()))
 		{
-			cout << "File not found: " << file << "\n";
+			cerr << "File not found: " << file << endl;
 			exit(1);
 		}
 	}
 
-	if (!artist.empty())
+	for (const auto &file: input_files)
 	{
-		for (const auto &file : input_files)
-		{
-			TagLib::FileRef current_file(file.c_str());
+		TagLib::FileRef current_file(file.c_str());
+		if (!artist.empty())
 			current_file.tag()->setArtist(artist);
-			current_file.save();
-		}
-	}
-	if (!album.empty())
-	{
-		for (const auto &file : input_files)
-		{
-			TagLib::FileRef current_file(file.c_str());
+		if (!album.empty())
 			current_file.tag()->setAlbum(album);
-			current_file.save();
-		}
-	}
-	if (!genre.empty())
-	{
-		for (const auto &file : input_files)
-		{
-			TagLib::FileRef current_file(file.c_str());
+		if (!genre.empty())
 			current_file.tag()->setGenre(genre);
-			current_file.save();
-		}
-	}
- 	if (!title.empty())
-	{
-		for (const auto &file : input_files)
-		{
-			TagLib::FileRef current_file(file.c_str());
+		if (!title.empty())
 			current_file.tag()->setTitle(title);
-			current_file.save();
-		}
-	}
-
-	if (track_set)
-	{
-		for (const auto &file : input_files)
-		{
-			TagLib::FileRef current_file(file.c_str());
+		if (track_set)
 			current_file.tag()->setTrack(track);
-			current_file.save();
-		}
-	}
-
-	if (year_set)
-	{
-		for (const auto &file : input_files)
-		{
-			TagLib::FileRef current_file(file.c_str());
+		if (year_set)
 			current_file.tag()->setYear(year);
-			current_file.save();
-		}
+		current_file.save();
 	}
 
 	if (print_flag)
