@@ -9,8 +9,9 @@
 
 using namespace std;
 
-static bool verbose_flag;
+static bool dry_run_flag;
 static bool print_flag;
+static bool verbose_flag;
 
 void print_help_info()
 {
@@ -23,7 +24,7 @@ void print_help_info()
 	cout << "	-t, --title    set title tag for input files\n";
 	cout << "	-h  --help     display this help and exit\n";
 
-	cout << "Examples:\n";
+	cout << "\nExamples:\n";
 	cout << "	earmark -pa \"Led Zeppelin\" \"Stairway to Heaven.mp3\"\n";
 	cout << "	earmark --genre Rock *.flac\n";
 }
@@ -52,12 +53,19 @@ int main(int argc, char **argv)
 		("k,track",     "Param track number", cxxopts::value<int>())
 		("y,year",      "Param year", cxxopts::value<int>())
 		("h,help",      "Print usage")
+		("d,dry-run",   "Simulate changes")
 		("p,print",     "Print tags", cxxopts::value<bool>())
 		("input_files", "Input files", cxxopts::value<vector<string>>())
 	;
 
 	options.parse_positional({"input_files"});
 	auto result = options.parse(argc, argv);
+	
+	if (result.count("help"))
+	{
+		print_help_info();
+		exit(0);
+	}
 
 	vector<string> input_files;
 	if (result.count("input_files"))
@@ -67,12 +75,6 @@ int main(int argc, char **argv)
 		cerr << "earmark: missing file operand" << endl;
 		cerr << "Try 'earmark --help' for more information." << endl;
 		exit(1);
-	}
-
-	if (result.count("help"))
-	{
-		print_help_info();
-		exit(0);
 	}
 
 	if (result.count("print"))
@@ -150,7 +152,12 @@ int main(int argc, char **argv)
 			current_file.tag()->setTrack(track);
 		if (year_set)
 			current_file.tag()->setYear(year);
-		current_file.save();
+		if (!dry_run_flag)
+		{
+			if (!current_file.save())
+				cerr << "Error: Failed to save metadata for: " << file << endl;
+		}
+		// current_file.save();
 	}
 
 	if (print_flag)

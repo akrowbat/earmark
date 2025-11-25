@@ -14,3 +14,6 @@ Using earmark is very simple. It takes arguments for specific tag types like art
 * Add cover stripping/extracting feature (and broader tag stripping features)
 * Add filename/tag conversion features
 * Come up with a more coherent scheme for printing information about what earmark is doing and verifying changes with the user before modifying files
+* Add logging capability
+* Add interactive mode to input different data for individual files
+* Add config file defining standard operations used by individual users
