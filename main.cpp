@@ -20,7 +20,7 @@ void print_help_info()
 	std::cout << "	-l, --album    set album tag for input files\n";
 	std::cout << "	-k, --track    set track tag for input files\n";
 	std::cout << "	-t, --title    set title tag for input files\n";
-	std::cout << "	    --help     display this help and exit\n";
+	std::cout << "	-h  --help     display this help and exit\n";
 
 	std::cout << "Examples:\n";
 	std::cout << "	earmark -pa \"Led Zeppelin\" \"Stairway to Heaven.mp3\"\n";
