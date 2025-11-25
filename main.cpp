@@ -13,6 +13,21 @@
 static int verbose_flag;
 static int print_flag;
 
+void print_help_info()
+{
+	std::cout << "Usage: earmark [OPTION]... [FILE]...\n";
+	std::cout << "Modify or print metadata from audio files\n\n";
+	std::cout << "	-a, --artist   set artist tag for input files\n";
+	std::cout << "	-g, --genre    set genre tag for input files\n";
+	std::cout << "	-l, --album    set album tag for input files\n";
+	std::cout << "	-k, --track    set track tag for input files\n";
+	std::cout << "	-t, --title    set title tag for input files\n";
+	std::cout << "	    --help     display this help and exit\n";
+
+	std::cout << "Examples:\n	earmark -pa \"Led Zeppelin\" \"Stairway to Heaven.mp3\"	Change the artist tag of the mp3 file to Led Zeppelin and print all tags\n";
+	std::cout << "	earmark --genre Rock *.flac	Change the genre tag of all flac files in the directory to Rock\n";
+}
+
 void print_tags(const char* filename)
 {
 	TagLib::FileRef input_file(filename);
@@ -52,6 +67,7 @@ int main(int argc, char **argv)
 			{"artist",  required_argument, 0, 'a'},
 			{"extract", required_argument, 0, 'x'},
 			{"genre",   required_argument, 0, 'g'},
+			{"help",    no_argument,       0, 'h'},
 			{"strip",   no_argument,       0, 's'},
 			{"title",   required_argument, 0, 't'},
 			{"track",   required_argument, 0, 'k'},
@@ -60,7 +76,7 @@ int main(int argc, char **argv)
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
 
-		c = getopt_long (argc, argv, "psa:l:g:k:t:",
+		c = getopt_long (argc, argv, "psa:l:g:hk:t:",
 						long_options, &option_index);
 
 		/* Detect the end of the options. */
@@ -84,22 +100,22 @@ int main(int argc, char **argv)
 				break;
 
 			case 'a':
-				//printf ("option -a with value '%s'\n", optarg);
 				artist = optarg;
 				break;
 
 			case 'l':
-				printf ("option -l with value '%s'\n", optarg);
 				album = optarg;
 				break;
 
 			case 'g':
-				printf ("option -g with value '%s'\n", optarg);
 				genre = optarg;
 				break;
 
+			case 'h':
+				print_help_info();
+				exit(0);
+
 			case 'k':
-				printf ("option -k with value '%s'\n", optarg);
 				// track = optarg;
 				break;
 
@@ -108,20 +124,21 @@ int main(int argc, char **argv)
 				break;
 
 			case 't':
-				printf("option -t with value '%s'\n", optarg);
 				title = optarg;
 				break;
 
 			case 'x':
-				printf("option -x with value '%s'\n", optarg);
 				break;
 
 			case '?':
 				/* getopt_long already printed an error message. */
+				std::cout << "Test case\n";
 				break;
 
 			default:
-				abort ();
+				std::cout << "earmark: missing file operand\n";
+				std::cout << "Try 'earmark --help' for more information.\n";
+				exit(1);
 		}
 	}
 
@@ -187,5 +204,5 @@ int main(int argc, char **argv)
 		}
 	}
 
-	exit (0);
+	exit(0);
 }

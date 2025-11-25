@@ -13,3 +13,5 @@ target_include_directories(earmark PRIVATE /usr/local/include/taglib)
 target_link_directories(earmark PRIVATE /usr/local/lib)
 find_package(ZLIB REQUIRED)
 target_link_libraries(earmark PRIVATE tag ZLIB::ZLIB)
+
+install(TARGETS earmark RUNTIME DESTINATION bin)
