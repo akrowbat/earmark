@@ -7,66 +7,67 @@
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 
-/* Flag set by ‘--verbose’. */
+using namespace std;
+
 static bool verbose_flag;
 static bool print_flag;
 
 void print_help_info()
 {
-	std::cout << "Usage: earmark [OPTION]... [FILE]...\n";
-	std::cout << "Modify or print metadata from audio files\n\n";
-	std::cout << "	-a, --artist   set artist tag for input files\n";
-	std::cout << "	-g, --genre    set genre tag for input files\n";
-	std::cout << "	-l, --album    set album tag for input files\n";
-	std::cout << "	-k, --track    set track tag for input files\n";
-	std::cout << "	-t, --title    set title tag for input files\n";
-	std::cout << "	-h  --help     display this help and exit\n";
+	cout << "Usage: earmark [OPTION]... [FILE]...\n";
+	cout << "Modify or print metadata from audio files\n\n";
+	cout << "	-a, --artist   set artist tag for input files\n";
+	cout << "	-g, --genre    set genre tag for input files\n";
+	cout << "	-l, --album    set album tag for input files\n";
+	cout << "	-k, --track    set track tag for input files\n";
+	cout << "	-t, --title    set title tag for input files\n";
+	cout << "	-h  --help     display this help and exit\n";
 
-	std::cout << "Examples:\n";
-	std::cout << "	earmark -pa \"Led Zeppelin\" \"Stairway to Heaven.mp3\"\n";
-	std::cout << "	earmark --genre Rock *.flac\n";
+	cout << "Examples:\n";
+	cout << "	earmark -pa \"Led Zeppelin\" \"Stairway to Heaven.mp3\"\n";
+	cout << "	earmark --genre Rock *.flac\n";
 }
 
 void print_tags(const char* filename)
 {
 	TagLib::FileRef input_file(filename);
-	std::cout << "File: " << filename << "\n";
-	std::cout << "Album: " << input_file.tag()->album() << "\n";
-	std::cout << "Artist: " << input_file.tag()->artist() << "\n";
-	std::cout << "Genre: " << input_file.tag()->genre() << "\n";
-	std::cout << "Title: " << input_file.tag()->title() << "\n";
-	std::cout << "Track: " << input_file.tag()->track() << "\n";
-	std::cout << "Year: " << input_file.tag()->year() << "\n";
+	cout << endl << "File: " << filename << "\n";
+	cout << "Album: " << input_file.tag()->album() << "\n";
+	cout << "Artist: " << input_file.tag()->artist() << "\n";
+	cout << "Genre: " << input_file.tag()->genre() << "\n";
+	cout << "Title: " << input_file.tag()->title() << "\n";
+	cout << "Track: " << input_file.tag()->track() << "\n";
+	cout << "Year: " << input_file.tag()->year() << "\n";
 }
 
 int main(int argc, char **argv)
 {
 	if (argc == 1)
 	{
-		std::cerr << "earmark: missing file operand" << std::endl;
-		std::cerr << "Try 'earmark --help' for more information." << std::endl;
+		cerr << "earmark: missing file operand" << endl;
+		cerr << "Try 'earmark --help' for more information." << endl;
 		exit(1);
 	}
 	cxxopts::Options options("earmark", "Edit audio metadata");
 
 	options.add_options()
-		("a,artist",    "Param artist", cxxopts::value<std::string>())
-		("l,album",     "Param album", cxxopts::value<std::string>())
-		("g,genre",     "Param genre", cxxopts::value<std::string>())
-		("t,title",     "Param title", cxxopts::value<std::string>())
+		("a,artist",    "Param artist", cxxopts::value<string>())
+		("l,album",     "Param album", cxxopts::value<string>())
+		("g,genre",     "Param genre", cxxopts::value<string>())
+		("t,title",     "Param title", cxxopts::value<string>())
 		("k,track",     "Param track number", cxxopts::value<int>())
 		("y,year",      "Param year", cxxopts::value<int>())
 		("h,help",      "Print usage")
 		("p,print",     "Print tags", cxxopts::value<bool>())
-		("input_files", "Input files", cxxopts::value<std::vector<std::string>>())
+		("input_files", "Input files", cxxopts::value<vector<string>>())
 	;
 
 	options.parse_positional({"input_files"});
 	auto result = options.parse(argc, argv);
 
-	std::vector<std::string> input_files;
+	vector<string> input_files;
 	if (result.count("input_files"))
-		input_files = result["input_files"].as<std::vector<std::string>>();
+		input_files = result["input_files"].as<vector<string>>();
 
 	if (result.count("help"))
 	{
@@ -77,10 +78,10 @@ int main(int argc, char **argv)
 	if (result.count("print"))
 		print_flag = true;
 
-	std::string album;
-	std::string artist;
-	std::string genre;
-	std::string title;
+	string album;
+	string artist;
+	string genre;
+	string title;
 	int track;
 	bool track_set;
 	int year;
@@ -88,48 +89,48 @@ int main(int argc, char **argv)
 
 	if (result.count("artist"))
 	{
-		artist = result["artist"].as<std::string>();
-		std::cout << "Artist value: " << artist << std::endl;
+		artist = result["artist"].as<string>();
+		cout << "Artist value: " << artist << endl;
 	}
 	
 	if (result.count("album"))
 	{
-		album = result["album"].as<std::string>();
-		std::cout << "Album value: " << album << std::endl;
+		album = result["album"].as<string>();
+		cout << "Album value: " << album << endl;
 	}
 	
 	if (result.count("genre"))
 	{
-		genre = result["genre"].as<std::string>();
-		std::cout << "Genre value: " << genre << std::endl;
+		genre = result["genre"].as<string>();
+		cout << "Genre value: " << genre << endl;
 	}
 	
 	if (result.count("title"))
 	{
-		title = result["title"].as<std::string>();
-		std::cout << "Title value: " << title << std::endl;
+		title = result["title"].as<string>();
+		cout << "Title value: " << title << endl;
 	}
 	
 	if (result.count("track"))
 	{
 		track_set = true;
 		track = result["track"].as<int>();
-		std::cout << "Track value: " << track << std::endl;
+		cout << "Track value: " << track << endl;
 	}
 	
 	if (result.count("year"))
 	{
 		year_set = true;
 		year = result["year"].as<int>();
-		std::cout << "Year value: " << year << std::endl;
+		cout << "Year value: " << year << endl;
 	}
 	
 	/* Check if all the files exist. */
 	for (const auto& file : input_files)
 	{
-		if (std::filesystem::exists(file.c_str()) == 0)
+		if (filesystem::exists(file.c_str()) == 0)
 		{
-			std::cout << "File not found: " << file << "\n";
+			cout << "File not found: " << file << "\n";
 			exit(1);
 		}
 	}
