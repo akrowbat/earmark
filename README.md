@@ -1,0 +1,8 @@
+# earmark
+Earmark is a command line program to edit audio file metadata from the command line. I tried a few programs that were out there that do this, but I didn't like any of them. So I decided to write my own. Its main usefulness is if you're running a headless media server like Ampache, Jellyfin, or something. It is essentially a command line interface to access the functions from the [TagLib](http://taglib.org/) C++ library. Earmark is extremely barebones right now, and I don't recommend running it until I improve it substantially.
+
+# TODO
+* Add logic to verify MIME type so files don't get corrupted if they have the wrong extensions
+* Add cover stripping/extracting feature (and broader tag stripping features)
+* Add filename/tag conversion features
+* Come up with a more coherent scheme for printing information about what earmark is doing and verifying changes with the user before modifying files
