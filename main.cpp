@@ -103,6 +103,10 @@ int main(int argc, char **argv)
 				// track = optarg;
 				break;
 
+			case 'p':
+				print_flag = 1;
+				break;
+
 			case 't':
 				printf("option -t with value '%s'\n", optarg);
 				title = optarg;

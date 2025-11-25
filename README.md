@@ -1,5 +1,8 @@
 # earmark
-Earmark is a command line program to edit audio file metadata from the command line. I tried a few programs that were out there that do this, but I didn't like any of them. So I decided to write my own. Its main usefulness is if you're running a headless media server like Ampache, Jellyfin, or something. It is essentially a command line interface to access the functions from the [TagLib](http://taglib.org/) C++ library. Earmark is extremely barebones right now, and I don't recommend running it until I improve it substantially.
+Earmark is a command line program to edit audio file metadata from the command line. I tried a few programs that were out there that do this, but I didn't like any of them. So I decided to write my own. Its main usefulness is if you're running a headless media server like Ampache, Jellyfin, or something. It is essentially a command line interface to access the functions from the [TagLib](http://taglib.org/) C++ library. Earmark is extremely barebones right now, and I don't recommend running it until I improve it substantially. It doesn't yet do any filetype verification, so if you have a file with a wrong extension, it may corrupt that file.
+
+# Build
+To build earmark, you'll need to [build TagLib](https://github.com/taglib/taglib/blob/master/INSTALL.md) and install it. Usually that just involves installing cmake, zlib (if you want zlib support), and utfcpp (the zlib1g-dev and libutfcpp-dev packages on Debian derivatives). Then just make a build directory in the earmark directory and run `cmake ..` and then `make` in it.
 
 # TODO
 * Add logic to verify MIME type so files don't get corrupted if they have the wrong extensions
