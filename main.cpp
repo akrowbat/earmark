@@ -1,17 +1,15 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <getopt.h>
-
 #include <iostream>
 #include <filesystem>
 #include <vector>
+
+#include <cxxopts.hpp>
 
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
 
 /* Flag set by ‘--verbose’. */
-static int verbose_flag;
-static int print_flag;
+static bool verbose_flag;
+static bool print_flag;
 
 void print_help_info()
 {
@@ -24,8 +22,9 @@ void print_help_info()
 	std::cout << "	-t, --title    set title tag for input files\n";
 	std::cout << "	    --help     display this help and exit\n";
 
-	std::cout << "Examples:\n	earmark -pa \"Led Zeppelin\" \"Stairway to Heaven.mp3\"	Change the artist tag of the mp3 file to Led Zeppelin and print all tags\n";
-	std::cout << "	earmark --genre Rock *.flac	Change the genre tag of all flac files in the directory to Rock\n";
+	std::cout << "Examples:\n";
+	std::cout << "	earmark -pa \"Led Zeppelin\" \"Stairway to Heaven.mp3\"\n";
+	std::cout << "	earmark --genre Rock *.flac\n";
 }
 
 void print_tags(const char* filename)
@@ -42,167 +41,163 @@ void print_tags(const char* filename)
 
 int main(int argc, char **argv)
 {
-	int c;
-	std::vector<const char*> input_files;
-
-	const char* album = nullptr;
-	const char* artist = nullptr;
-	const char* genre = nullptr;
-	const char* title = nullptr;
-	int track;
-	int year;
-	bool file_changed = false;
-
-	while (1)
+	if (argc == 1)
 	{
-		static struct option long_options[] =
-		{
-			/* These options set a flag. */
-			{"verbose", no_argument,       &verbose_flag, 1},
-			{"brief",   no_argument,       &verbose_flag, 0},
-			{"print",   no_argument,       &print_flag, 1},
-			/* These options don’t set a flag.
-			We distinguish them by their indices. */
-			{"album",   required_argument, 0, 'l'},
-			{"artist",  required_argument, 0, 'a'},
-			{"extract", required_argument, 0, 'x'},
-			{"genre",   required_argument, 0, 'g'},
-			{"help",    no_argument,       0, 'h'},
-			{"strip",   no_argument,       0, 's'},
-			{"title",   required_argument, 0, 't'},
-			{"track",   required_argument, 0, 'k'},
-			{0, 0, 0, 0}
-		};
-		/* getopt_long stores the option index here. */
-		int option_index = 0;
+		std::cerr << "earmark: missing file operand" << std::endl;
+		std::cerr << "Try 'earmark --help' for more information." << std::endl;
+		exit(1);
+	}
+	cxxopts::Options options("earmark", "Edit audio metadata");
 
-		c = getopt_long (argc, argv, "psa:l:g:hk:t:",
-						long_options, &option_index);
+	options.add_options()
+		("a,artist",    "Param artist", cxxopts::value<std::string>())
+		("l,album",     "Param album", cxxopts::value<std::string>())
+		("g,genre",     "Param genre", cxxopts::value<std::string>())
+		("t,title",     "Param title", cxxopts::value<std::string>())
+		("k,track",     "Param track number", cxxopts::value<int>())
+		("y,year",      "Param year", cxxopts::value<int>())
+		("h,help",      "Print usage")
+		("p,print",     "Print tags", cxxopts::value<bool>())
+		("input_files", "Input files", cxxopts::value<std::vector<std::string>>())
+	;
 
-		/* Detect the end of the options. */
-		if (c == -1)
-			break;
+	options.parse_positional({"input_files"});
+	auto result = options.parse(argc, argv);
 
-		switch (c)
-		{
-			case 0:
-			/* If this option set a flag, do nothing else now. */
-				if (long_options[option_index].flag != 0)
-					break;
-				printf ("option %s", long_options[option_index].name);
-				if (optarg)
-					printf (" with arg %s", optarg);
-					printf ("\n");
-					break;
+	std::vector<std::string> input_files;
+	if (result.count("input_files"))
+		input_files = result["input_files"].as<std::vector<std::string>>();
 
-			case 's':
-				puts ("option -s");
-				break;
-
-			case 'a':
-				artist = optarg;
-				break;
-
-			case 'l':
-				album = optarg;
-				break;
-
-			case 'g':
-				genre = optarg;
-				break;
-
-			case 'h':
-				print_help_info();
-				exit(0);
-
-			case 'k':
-				// track = optarg;
-				break;
-
-			case 'p':
-				print_flag = 1;
-				break;
-
-			case 't':
-				title = optarg;
-				break;
-
-			case 'x':
-				break;
-
-			case '?':
-				/* getopt_long already printed an error message. */
-				std::cout << "Test case\n";
-				break;
-
-			default:
-				std::cout << "earmark: missing file operand\n";
-				std::cout << "Try 'earmark --help' for more information.\n";
-				exit(1);
-		}
+	if (result.count("help"))
+	{
+		print_help_info();
+		exit(0);
 	}
 
-	/* Instead of reporting ‘--verbose’
-	and ‘--brief’ as they are encountered,
-	we report the final status resulting from them. */
-	if (verbose_flag)
-		puts ("verbose flag is set");
+	if (result.count("print"))
+		print_flag = true;
 
-	/* Check if all the files exist. */
-	for (int i = optind; i < argc; ++i )
+	std::string album;
+	std::string artist;
+	std::string genre;
+	std::string title;
+	int track;
+	bool track_set;
+	int year;
+	bool year_set;
+
+	if (result.count("artist"))
 	{
-		if (std::filesystem::exists(argv[i]) == 0)
+		artist = result["artist"].as<std::string>();
+		std::cout << "Artist value: " << artist << std::endl;
+	}
+	
+	if (result.count("album"))
+	{
+		album = result["album"].as<std::string>();
+		std::cout << "Album value: " << album << std::endl;
+	}
+	
+	if (result.count("genre"))
+	{
+		genre = result["genre"].as<std::string>();
+		std::cout << "Genre value: " << genre << std::endl;
+	}
+	
+	if (result.count("title"))
+	{
+		title = result["title"].as<std::string>();
+		std::cout << "Title value: " << title << std::endl;
+	}
+	
+	if (result.count("track"))
+	{
+		track_set = true;
+		track = result["track"].as<int>();
+		std::cout << "Track value: " << track << std::endl;
+	}
+	
+	if (result.count("year"))
+	{
+		year_set = true;
+		year = result["year"].as<int>();
+		std::cout << "Year value: " << year << std::endl;
+	}
+	
+	/* Check if all the files exist. */
+	for (const auto& file : input_files)
+	{
+		if (std::filesystem::exists(file.c_str()) == 0)
 		{
-			std::cout << "File not found: " << argv[i] << "\n";
+			std::cout << "File not found: " << file << "\n";
 			exit(1);
 		}
-		input_files.push_back(argv[i]);
 	}
 
-	if (artist != NULL)
+	if (!artist.empty())
 	{
-		for (const auto &arg : input_files)
+		for (const auto &file : input_files)
 		{
-			TagLib::FileRef current_file(arg);
+			TagLib::FileRef current_file(file.c_str());
 			current_file.tag()->setArtist(artist);
 			current_file.save();
 		}
 	}
-	if (album != NULL)
+	if (!album.empty())
 	{
-		for (const auto &arg : input_files)
+		for (const auto &file : input_files)
 		{
-			TagLib::FileRef current_file(arg);
+			TagLib::FileRef current_file(file.c_str());
 			current_file.tag()->setAlbum(album);
 			current_file.save();
 		}
 	}
-	if (genre != NULL)
+	if (!genre.empty())
 	{
-		for (const auto &arg : input_files)
+		for (const auto &file : input_files)
 		{
-			TagLib::FileRef current_file(arg);
+			TagLib::FileRef current_file(file.c_str());
 			current_file.tag()->setGenre(genre);
 			current_file.save();
 		}
 	}
- 	if (title != NULL)
+ 	if (!title.empty())
 	{
-		for (const auto &arg : input_files)
+		for (const auto &file : input_files)
 		{
-			TagLib::FileRef current_file(arg);
+			TagLib::FileRef current_file(file.c_str());
 			current_file.tag()->setTitle(title);
 			current_file.save();
 		}
 	}
-	if (print_flag)
+
+	if (track_set)
 	{
-		for (const auto &arg : input_files)
+		for (const auto &file : input_files)
 		{
-			// std::cout << arg << "\n";
-			print_tags(arg);
+			TagLib::FileRef current_file(file.c_str());
+			current_file.tag()->setTrack(track);
+			current_file.save();
 		}
 	}
 
+	if (year_set)
+	{
+		for (const auto &file : input_files)
+		{
+			TagLib::FileRef current_file(file.c_str());
+			current_file.tag()->setYear(year);
+			current_file.save();
+		}
+	}
+
+	if (print_flag)
+	{
+		for (const auto &file : input_files)
+		{
+			print_tags(file.c_str());
+		}
+	}
+	
 	exit(0);
 }
