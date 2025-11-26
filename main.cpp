@@ -6,6 +6,7 @@
 
 #include <taglib/fileref.h>
 #include <taglib/tag.h>
+#include <taglib/tpropertymap.h>
 
 using namespace std;
 
@@ -32,13 +33,10 @@ void print_help_info()
 void print_tags(const char* filename)
 {
 	TagLib::FileRef input_file(filename);
-	cout << endl << "File: " << filename << "\n";
-	cout << "Album: " << input_file.tag()->album() << "\n";
-	cout << "Artist: " << input_file.tag()->artist() << "\n";
-	cout << "Genre: " << input_file.tag()->genre() << "\n";
-	cout << "Title: " << input_file.tag()->title() << "\n";
-	cout << "Track: " << input_file.tag()->track() << "\n";
-	cout << "Year: " << input_file.tag()->year() << "\n";
+	TagLib::PropertyMap properties = input_file.properties();
+	cout << endl << "File: " << filename << endl;
+	for (const auto& property : properties)
+		cout << property.first << ": " << properties.value(property.first) << endl;
 }
 
 int main(int argc, char **argv)
@@ -47,15 +45,16 @@ int main(int argc, char **argv)
 
 	options.add_options()
 		("a,artist",    "Param artist", cxxopts::value<string>())
-		("l,album",     "Param album", cxxopts::value<string>())
-		("g,genre",     "Param genre", cxxopts::value<string>())
-		("t,title",     "Param title", cxxopts::value<string>())
-		("k,track",     "Param track number", cxxopts::value<int>())
-		("y,year",      "Param year", cxxopts::value<int>())
-		("h,help",      "Print usage")
 		("d,dry-run",   "Simulate changes")
-		("p,print",     "Print tags", cxxopts::value<bool>())
+		("g,genre",     "Param genre", cxxopts::value<string>())
+		("h,help",      "Print usage")
+		("k,track",     "Param track number", cxxopts::value<int>())
+		("l,album",     "Param album", cxxopts::value<string>())
 		("input_files", "Input files", cxxopts::value<vector<string>>())
+		("p,print",     "Print tags", cxxopts::value<bool>())
+		("t,title",     "Param title", cxxopts::value<string>())
+		("v,verbose",   "More output")
+		("y,year",      "Param year", cxxopts::value<int>())
 	;
 
 	options.parse_positional({"input_files"});
@@ -79,6 +78,8 @@ int main(int argc, char **argv)
 
 	if (result.count("print"))
 		print_flag = true;
+	if (result.count("verbose"))
+		verbose_flag = true;
 
 	string album;
 	string artist;
@@ -157,16 +158,11 @@ int main(int argc, char **argv)
 			if (!current_file.save())
 				cerr << "Error: Failed to save metadata for: " << file << endl;
 		}
-		// current_file.save();
 	}
 
 	if (print_flag)
-	{
 		for (const auto &file : input_files)
-		{
 			print_tags(file.c_str());
-		}
-	}
 	
 	exit(0);
 }
