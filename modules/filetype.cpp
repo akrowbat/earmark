@@ -60,8 +60,8 @@ enum class MimeType
 	UNKNOWN,
 };
 
-MimeType mimeFromString(const std::string& mime) {
-	static const std::unordered_map<std::string, MimeType> mimeMap = {
+MimeType mime_from_string(const std::string& mime) {
+	static const std::unordered_map<std::string, MimeType> mime_map = {
 		{"audio/aiff", MimeType::AIFF},
 		{"audio/ape", MimeType::APE},
 		{"video/x-ms-asf", MimeType::ASF},
@@ -92,17 +92,14 @@ MimeType mimeFromString(const std::string& mime) {
 		{"audio/x-xm", MimeType::XM},
 	};
 
-	auto it = mimeMap.find(mime);
-	if (it != mimeMap.end())
-	{
-		return it->second;
-	} else
-	{
+	auto mime_type = mime_map.find(mime);
+	if (mime_type != mime_map.end())
+		return mime_type->second;
+	else
 		return MimeType::UNKNOWN;
-	}
 }
 
-std::string detectMime(const char* fileName)
+std::string detect_mime(const char* fileName)
 {
 	magic_t magic = magic_open(MAGIC_MIME_TYPE);
 	if (!magic) return "";
@@ -126,8 +123,8 @@ class MimeResolver : public TagLib::FileRef::FileTypeResolver
 		TagLib::File* createFile(const char* fileName,
 									 bool readAudioProperties,
 									 TagLib::AudioProperties::ReadStyle style) const {
-		 std::string mime = detectMime(fileName);
-		switch (mimeFromString(mime))
+		 std::string mime = detect_mime(fileName);
+		switch (mime_from_string(mime))
 		{
 			case MimeType::APE:
 				return new TagLib::APE::File(fileName, readAudioProperties, style);
