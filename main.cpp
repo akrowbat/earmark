@@ -8,6 +8,8 @@
 #include <taglib/tag.h>
 #include <taglib/tpropertymap.h>
 
+#include "modules/filetype.cpp"
+
 using namespace std;
 
 static bool dry_run_flag;
@@ -41,6 +43,8 @@ void print_tags(const char* filename)
 
 int main(int argc, char **argv)
 {
+	TagLib::FileRef::addFileTypeResolver(new MimeResolver());
+
 	cxxopts::Options options("earmark", "Edit audio metadata");
 
 	options.add_options()
