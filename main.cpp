@@ -48,17 +48,23 @@ int main(int argc, char **argv)
 	cxxopts::Options options("earmark", "Edit audio metadata");
 
 	options.add_options()
+		// Tag section
 		("a,artist",    "Param artist", cxxopts::value<string>())
-		("dry-run",     "Simulate changes")
 		("g,genre",     "Param genre", cxxopts::value<string>())
-		("h,help",      "Print usage")
 		("k,track",     "Param track number", cxxopts::value<int>())
 		("l,album",     "Param album", cxxopts::value<string>())
-		("input_files", "Input files", cxxopts::value<vector<string>>())
-		("p,print",     "Print tags", cxxopts::value<bool>())
 		("t,title",     "Param title", cxxopts::value<string>())
-		("v,verbose",   "More output")
 		("y,year",      "Param year", cxxopts::value<int>())
+		/* I'm not sure how I'm going to set up a property map argument
+			that can separate well from the input_files vector */
+		// ("m,property",  "Param property map", cxxopts::value<vector<string>>())
+		// Flag section
+		("p,print",     "Print tags", cxxopts::value<bool>())
+		("dry-run",     "Simulate changes")
+		("v,verbose",   "More output")
+		("h,help",      "Print usage")
+		//
+		("input_files", "Input files", cxxopts::value<vector<string>>())
 	;
 
 	options.parse_positional({"input_files"});
@@ -165,7 +171,7 @@ int main(int argc, char **argv)
 		if (!dry_run_flag)
 		{
 			if (!verified_file.save())
-				cerr << "Error: Failed to save metadata for: " << verified_file.file()->name() << endl;
+				cerr << "ERROR: Failed to save metadata for: " << verified_file.file()->name() << endl;
 		}
 	}
 
