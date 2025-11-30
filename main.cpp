@@ -25,6 +25,7 @@ void print_help_info()
 	cout << "	-l, --album    set album tag for input files" << endl;
 	cout << "	-k, --track    set track tag for input files" << endl;
 	cout << "	-t, --title    set title tag for input files" << endl;
+	cout << "	-p, --print    print out audio metadata after processing" << endl;
 	cout << "	-h  --help     display this help and exit" << endl;
 
 	cout << endl << "Examples:" << endl;
