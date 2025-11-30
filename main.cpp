@@ -16,18 +16,18 @@ static bool verbose_flag;
 
 void print_help_info()
 {
-	cout << "Usage: earmark [OPTION]... [FILE]...\n";
-	cout << "Modify or print metadata from audio files\n\n";
-	cout << "	-a, --artist   set artist tag for input files\n";
-	cout << "	-g, --genre    set genre tag for input files\n";
-	cout << "	-l, --album    set album tag for input files\n";
-	cout << "	-k, --track    set track tag for input files\n";
-	cout << "	-t, --title    set title tag for input files\n";
-	cout << "	-h  --help     display this help and exit\n";
+	cout << "Usage: earmark [OPTION]... [FILE]..." << endl;
+	cout << "Modify or print metadata from audio files" << endl << endl;
+	cout << "	-a, --artist   set artist tag for input files" << endl;
+	cout << "	-g, --genre    set genre tag for input files" << endl;
+	cout << "	-l, --album    set album tag for input files" << endl;
+	cout << "	-k, --track    set track tag for input files" << endl;
+	cout << "	-t, --title    set title tag for input files" << endl;
+	cout << "	-h  --help     display this help and exit" << endl;
 
-	cout << "\nExamples:\n";
-	cout << "	earmark -pa \"Led Zeppelin\" \"Stairway to Heaven.mp3\"\n";
-	cout << "	earmark --genre Rock *.flac\n";
+	cout << endl << "Examples:" << endl;
+	cout << "	earmark -pa \"Led Zeppelin\" \"Stairway to Heaven.mp3\"" << endl;
+	cout << "	earmark --genre Rock *.flac" << endl;
 }
 
 void print_tags(const char* filename)
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 
 	options.add_options()
 		("a,artist",    "Param artist", cxxopts::value<string>())
-		("d,dry-run",   "Simulate changes")
+		("dry-run",     "Simulate changes")
 		("g,genre",     "Param genre", cxxopts::value<string>())
 		("h,help",      "Print usage")
 		("k,track",     "Param track number", cxxopts::value<int>())
@@ -62,6 +62,7 @@ int main(int argc, char **argv)
 	
 	if (result.count("help"))
 	{
+		// options.help(); // This is a built-in cxxopts thing. Not sure how it works.
 		print_help_info();
 		exit(0);
 	}

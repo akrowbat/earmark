@@ -2,7 +2,7 @@
 Earmark is a command line program to edit audio file metadata. I tried a few programs that were out there that do this, but I didn't like any of them. So I decided to write my own. Its main usefulness is if you're running a headless media server like Ampache, Jellyfin, or something. It is essentially a command line interface to access the functions from the [TagLib](http://taglib.org/) C++ library. Earmark is extremely barebones right now, and I don't recommend running it until I improve it substantially. It doesn't yet do any filetype verification, so if you have a file with a wrong extension, it may corrupt that file.
 
 # Build
-To build earmark, you'll need to [build TagLib](https://github.com/taglib/taglib/blob/master/INSTALL.md) and install it. TagLib depends on zlib and utfcpp (the zlib1g-dev and libutfcpp-dev packages on Debian derivatives). You'll also need to install the [cxxopts](https://github.com/jarro2783/cxxopts) headers into your include directory.
+To build earmark, you'll need to [build TagLib](https://github.com/taglib/taglib/blob/master/INSTALL.md) and install it. TagLib depends on zlib and utfcpp (the `zlib1g-dev` and `libutfcpp-dev` packages on Debian derivatives). You'll also need to install the [cxxopts](https://github.com/jarro2783/cxxopts) headers into your include directory (you just need the include/cxxopts.hpp file).
 
 After you clone the repository, run this to build the project: `cd earmark; mkdir build; cd build; cmake ..; make`
 
@@ -17,3 +17,4 @@ Using earmark is very simple. It takes arguments for specific tag types like art
 * Add logging capability
 * Add interactive mode to input different data for individual files
 * Add config file defining standard operations used by individual users
+* Add the ability to import/export tag data to JSON
