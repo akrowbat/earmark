@@ -143,25 +143,29 @@ int main(int argc, char **argv)
 		}
 	}
 
-	for (const auto &file: input_files)
+	// For loop that verifies MIME types before operations
+	std::vector<TagLib::FileRef> verified_files;
+	for (const auto &file : input_files)
+		verified_files.push_back(TagLib::FileRef(file.c_str()));
+
+	for (auto verified_file : verified_files)
 	{
-		TagLib::FileRef current_file(file.c_str());
 		if (!artist.empty())
-			current_file.tag()->setArtist(artist);
+			verified_file.tag()->setArtist(artist);
 		if (!album.empty())
-			current_file.tag()->setAlbum(album);
+			verified_file.tag()->setAlbum(album);
 		if (!genre.empty())
-			current_file.tag()->setGenre(genre);
+			verified_file.tag()->setGenre(genre);
 		if (!title.empty())
-			current_file.tag()->setTitle(title);
+			verified_file.tag()->setTitle(title);
 		if (track_set)
-			current_file.tag()->setTrack(track);
+			verified_file.tag()->setTrack(track);
 		if (year_set)
-			current_file.tag()->setYear(year);
+			verified_file.tag()->setYear(year);
 		if (!dry_run_flag)
 		{
-			if (!current_file.save())
-				cerr << "Error: Failed to save metadata for: " << file << endl;
+			if (!verified_file.save())
+				cerr << "Error: Failed to save metadata for: " << verified_file.file()->name() << endl;
 		}
 	}
 
