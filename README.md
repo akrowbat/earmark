@@ -1,5 +1,6 @@
 # earmark
-Earmark is a command line program to edit audio file metadata. I tried a few programs that were out there that do this, but I didn't like any of them. So I decided to write my own. Its main usefulness is if you're running a headless media server like Ampache, Jellyfin, or something. It is essentially a command line interface to access the functions from the [TagLib](http://taglib.org/) C++ library. Earmark is extremely barebones right now, and I don't recommend running it until I improve it substantially. I've implemented basic filetype verification with libmagic, so it shouldn't corrupt files with incorrect extensions. I make no promises. As of right now, it cannot handle multiple tags being assigned at once, so if you supply any tag, whether it be artist, title, track, whatever, all the input files will be set to that one tag.
+Earmark is a command line program to edit audio file metadata. I tried a few programs that were out there that do this, but I didn't like any of them. So I decided to write my own. Its main usefulness is if you're running a headless media server like Ampache, Jellyfin, or something. It is essentially a command line interface to access the functions from the [TagLib](http://taglib.org/) C++ library.
+Earmark is extremely barebones right now, and I don't recommend running it until I improve it substantially. I've implemented basic filetype verification with libmagic, so it shouldn't corrupt files with incorrect extensions. I make no promises. As of right now, it cannot handle multiple tags being assigned at once, so if you supply any tag, whether it be artist, title, track, whatever, all the input files will be set to that one tag.
 
 # Build
 Building earmark requires libmagic, TagLib, and [cxxopts](https://github.com/jarro2783/cxxopts).
@@ -10,6 +11,9 @@ Once all of that's done, you can build by running this in the repository directo
 # Usage
 Using earmark is very simple. It takes arguments for specific tag types like artist, genre, track, album, and so on, and treats the following argument as the value for that tag. For instance, `earmark --genre "Metal" *.mp3` will change all mp3 files in the working directory to have Metal for the genre tag. You can also use short options combined like `earmark -pa "Iron Maiden" "Aces High.flac"`. The -p means print out all the tag information after any file operations are done, and the -a means that earmark will change the artist value. Short options that require arguments cannot be combined, so if you're changing more than one value at a time, you have to separate them like so: `earmark -g Metal -a "Iron Maiden"`
 
+# Known Issues
+Ogg files of all types cannot be modified by earmark. The filetype verification class I built relies on libmagic to distinguish between filetypes, and it makes no distinction between different encodings in Ogg files.
+
 # TODO
 * Add cover stripping/extracting feature (and broader tag stripping features)
 * Add filename/tag conversion features
@@ -17,4 +21,4 @@ Using earmark is very simple. It takes arguments for specific tag types like art
 * Add logging capability
 * Add interactive mode to input different data for individual files
 * Add config file defining standard operations used by individual users
-* Add the ability to import/export tag data to JSON
+* Add the ability to import/export tag data to JSON or NFO
