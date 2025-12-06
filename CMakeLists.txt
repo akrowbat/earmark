@@ -7,10 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(earmark main.cpp)
 
 # Include libmagic
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBMAGIC REQUIRED libmagic)
-target_include_directories(earmark PRIVATE ${LIBMAGIC_INCLUDE_DIRS})
-target_link_libraries(earmark PRIVATE ${LIBMAGIC_LIBRARIES})
+find_path(LIBMAGIC_INCLUDE_DIR magic.h)
+find_library(LIBMAGIC_LIBRARY magic)
+target_include_directories(earmark PRIVATE ${LIBMAGIC_INCLUDE_DIR})
+target_link_libraries(earmark PRIVATE ${LIBMAGIC_LIBRARY})
 
 # Include TagLib headers
 target_include_directories(earmark PRIVATE /usr/local/include/taglib)
