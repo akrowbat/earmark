@@ -19,3 +19,4 @@ Using earmark is very simple. It takes arguments for specific tag types like art
 * Add interactive mode to input different data for individual files
 * Add config file defining standard operations used by individual users
 * Add the ability to import/export tag data to JSON or NFO
+* Add autocompletion features
