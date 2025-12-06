@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(earmark main.cpp)
 
 # Include libmagic
-find_path(LIBMAGIC_INCLUDE_DIR magic.h)
-find_library(LIBMAGIC_LIBRARY magic)
+find_path(LIBMAGIC_INCLUDE_DIR magic.h REQUIRED)
+find_library(LIBMAGIC_LIBRARY magic REQUIRED)
 target_include_directories(earmark PRIVATE ${LIBMAGIC_INCLUDE_DIR})
 target_link_libraries(earmark PRIVATE ${LIBMAGIC_LIBRARY})
 
