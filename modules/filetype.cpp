@@ -27,6 +27,7 @@
 #include <string>
 #include <unordered_map>
 #include <iostream>
+#include <fstream>
 
 
 enum class MimeType
@@ -76,6 +77,7 @@ MimeType mime_from_string(const std::string& mime) {
 		{"audio/x-musepack", MimeType::MPC},
 		{"audio/mpeg", MimeType::MPEG},
 		{"application/ogg", MimeType::OGG},
+		{"audio/ogg", MimeType::OGG},
 		{"audio/ogg; codecs=flac", MimeType::OGG_FLAC},
 		{"audio/ogg; codecs=opus", MimeType::OGG_OPUS},
 		{"audio/ogg; codecs=speex", MimeType::OGG_SPEEX},
@@ -117,6 +119,31 @@ std::string detect_mime(const char* fileName)
 	return result;
 }
 
+/* I have no idea if this function actually works. AI wrote it.
+	This resource suggests it probably won't
+	https://www.file-recovery.com/ogg-signature-format.htm
+*/
+
+MimeType detect_ogg_codec(const char* fileName)
+{
+	std::ifstream input_file(fileName, std::ios::binary);
+	if (!input_file) return MimeType::UNKNOWN;
+
+	char header[4];
+	input_file.read(header, sizeof(header));
+	char buffer[54];
+	input_file.read(buffer, sizeof(buffer));
+
+	std::string sig(buffer, input_file.gcount());
+
+	if (sig.find("vorbis") != std::string::npos) return MimeType::OGG_VORBIS;
+	else if (sig.find("OpusHead") != std::string::npos) return MimeType::OGG_OPUS;
+	else if (sig.find("fLaC") != std::string::npos) return MimeType::OGG_FLAC;
+	else if (sig.find("Speex") != std::string::npos) return MimeType::OGG_SPEEX;
+	else return MimeType::UNKNOWN;
+}
+
+
 class MimeResolver : public TagLib::FileRef::FileTypeResolver
 {
 	public:
@@ -150,6 +177,22 @@ class MimeResolver : public TagLib::FileRef::FileTypeResolver
 				return new TagLib::MPC::File(fileName, readAudioProperties, style);
 			case MimeType::MPEG:
 				return new TagLib::MPEG::File(fileName, readAudioProperties, style);
+			case MimeType::OGG:
+				switch (detect_ogg_codec(fileName))
+				{
+					case MimeType::OGG_FLAC:
+						return new TagLib::Ogg::FLAC::File(fileName, readAudioProperties, style);
+					case MimeType::OGG_OPUS:
+						return new TagLib::Ogg::Opus::File(fileName, readAudioProperties, style);
+					case MimeType::OGG_SPEEX:
+						return new TagLib::Ogg::Speex::File(fileName, readAudioProperties, style);
+					case MimeType::OGG_VORBIS:
+						return new TagLib::Vorbis::File(fileName, readAudioProperties, style);
+					default:
+						std::cerr << "ERROR: Unknown MIME type: " << mime << std::endl;
+						std::cerr << "File: " << fileName << std::endl;
+						exit(1);
+				}
 			case MimeType::OGG_FLAC:
 				return new TagLib::Ogg::FLAC::File(fileName, readAudioProperties, style);
 			case MimeType::OGG_OPUS:
