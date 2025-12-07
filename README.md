@@ -14,6 +14,7 @@ Using earmark is very simple. It takes arguments for specific tag types like art
 
 # Known Issues
 * Filetypes whose Mimetype is application/octet-stream can't be parsed yet
+* Assigning the same tag more than once results in the last one being assigned
 
 # TODO
 * Add cover stripping/extracting feature (and broader tag stripping features)
