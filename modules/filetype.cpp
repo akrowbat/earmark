@@ -85,7 +85,10 @@ MimeType mime_from_string(const std::string& mime) {
 		// {"audio/x-riff", MimeType::RIFF},
 		{"audio/x-s3m", MimeType::S3M},
 		{"audio/x-shorten", MimeType::SHORTEN},
-		{"application/octet-stream", MimeType::TTA},
+		/* Apparently application/octet-stream is just arbitrary binary data
+			to be saved to disk. I need to add another function like the
+			Ogg codec detection to figure out what these files are. */
+		// {"application/octet-stream", MimeType::TTA},
 		{"audio/x-tta", MimeType::TTA},
 		// {"audio/wav", MimeType::WAV},
 		// {"audio/x-wav", MimeType::WAV},
@@ -135,6 +138,15 @@ MimeType detect_ogg_codec(const char* fileName)
 	input_file.read(buffer, sizeof(buffer));
 
 	std::string sig(buffer, input_file.gcount());
+
+	/* Debugging stuff here. I still need to figure out
+		exactly how this code is working, what the boundaries
+		between these character arrays are and how they're
+		reading stuff.
+	std::cout << header << std::endl;
+	std::cout << buffer << std::endl;
+	std::cout << sig << std::endl;
+	*/
 
 	if (sig.find("vorbis") != std::string::npos) return MimeType::OGG_VORBIS;
 	else if (sig.find("OpusHead") != std::string::npos) return MimeType::OGG_OPUS;
