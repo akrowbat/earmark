@@ -45,6 +45,7 @@ enum class MimeType
 	MP4_VIDEO,
 	MPC,
 	MPEG,
+	OCTET,
 	OGG,
 	OGG_FLAC,
 	OGG_OPUS,
@@ -76,6 +77,7 @@ MimeType mime_from_string(const std::string& mime) {
 		{"video/mp4", MimeType::MP4_VIDEO},
 		{"audio/x-musepack", MimeType::MPC},
 		{"audio/mpeg", MimeType::MPEG},
+		{"application/octet-stream", MimeType::OCTET},
 		{"application/ogg", MimeType::OGG},
 		{"audio/ogg", MimeType::OGG},
 		{"audio/ogg; codecs=flac", MimeType::OGG_FLAC},
@@ -155,6 +157,18 @@ MimeType detect_ogg_codec(const char* fileName)
 	else return MimeType::UNKNOWN;
 }
 
+MimeType detect_octet_codec(const char* fileName)
+{
+	std::ifstream input_file(fileName, std::ios::binary);
+	if (!input_file) return MimeType::UNKNOWN;
+
+	char header[4];
+	input_file.read(header, sizeof(header));
+
+	std::string sig(header, input_file.gcount());
+	if (sig.find("wvpk") != std::string::npos) return MimeType::WAVPACK;
+	else return MimeType::UNKNOWN;
+}
 
 class MimeResolver : public TagLib::FileRef::FileTypeResolver
 {
@@ -189,6 +203,16 @@ class MimeResolver : public TagLib::FileRef::FileTypeResolver
 				return new TagLib::MPC::File(fileName, readAudioProperties, style);
 			case MimeType::MPEG:
 				return new TagLib::MPEG::File(fileName, readAudioProperties, style);
+			case MimeType::OCTET:
+				switch (detect_octet_codec(fileName))
+				{
+					case MimeType::WAVPACK:
+						return new TagLib::WavPack::File(fileName, readAudioProperties, style);
+					default:
+						std::cerr << "ERROR: Unknown MIME type: " << mime << std::endl;
+						std::cerr << "File: " << fileName << std::endl;
+						exit(1);
+				}
 			case MimeType::OGG:
 				switch (detect_ogg_codec(fileName))
 				{
