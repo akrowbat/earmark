@@ -124,11 +124,6 @@ std::string detect_mime(const char* fileName)
 	return result;
 }
 
-/* I have no idea if this function actually works. AI wrote it.
-	This resource suggests it probably won't
-	https://www.file-recovery.com/ogg-signature-format.htm
-*/
-
 MimeType detect_ogg_codec(const char* fileName)
 {
 	std::ifstream input_file(fileName, std::ios::binary);
