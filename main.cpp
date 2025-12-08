@@ -25,6 +25,7 @@ void print_help_info()
 	cout << "	-l, --album    set album tag for input files" << endl;
 	cout << "	-k, --track    set track tag for input files" << endl;
 	cout << "	-t, --title    set title tag for input files" << endl;
+	cout << "		 --strip    remove all tag data before operation" << endl;
 	cout << "	-p, --print    print out audio metadata after processing" << endl;
 	cout << "	-h  --help     display this help and exit" << endl;
 
@@ -60,6 +61,7 @@ int main(int argc, char **argv)
 			that can separate well from the input_files vector */
 		// ("m,property",  "Param property map", cxxopts::value<vector<string>>())
 		// Flag section
+		("strip",       "Remove all metadata", cxxopts::value<bool>())
 		("p,print",     "Print tags", cxxopts::value<bool>())
 		("dry-run",     "Simulate changes")
 		("v,verbose",   "More output")

@@ -24,6 +24,7 @@
 #include <taglib/xmfile.h>
 
 #include <magic.h>
+
 #include <string>
 #include <unordered_map>
 #include <iostream>
