@@ -25,7 +25,8 @@ void print_help_info()
 	cout << "	-l, --album    set album tag for input files" << endl;
 	cout << "	-k, --track    set track tag for input files" << endl;
 	cout << "	-t, --title    set title tag for input files" << endl;
-	cout << "		 --strip    remove all tag data before operation" << endl;
+	cout << "	--autonumber   autonumber tracks from specified number" << endl;
+	cout << "	--strip        remove all tag data before processing" << endl;
 	cout << "	-p, --print    print out audio metadata after processing" << endl;
 	cout << "	-h  --help     display this help and exit" << endl;
 
@@ -57,6 +58,7 @@ int main(int argc, char **argv)
 		("l,album",     "Param album", cxxopts::value<string>())
 		("t,title",     "Param title", cxxopts::value<string>())
 		("y,year",      "Param year", cxxopts::value<int>())
+		("autonumber",  "Number all tracks from starting value", cxxopts::value<int>())
 		/* I'm not sure how I'm going to set up a property map argument
 			that can separate well from the input_files vector */
 		// ("m,property",  "Param property map", cxxopts::value<vector<string>>())
@@ -104,12 +106,14 @@ int main(int argc, char **argv)
 	string title;
 	int track;
 	int year;
+	int autonumber;
 	bool album_set = false;
 	bool artist_set = false;
 	bool genre_set = false;
 	bool title_set = false;
 	bool track_set = false;
 	bool year_set = false;
+	bool autonumber_set = false;
 
 	if (result.count("artist"))
 	{
@@ -153,7 +157,19 @@ int main(int argc, char **argv)
 		cout << "Year value: " << year << endl;
 	}
 	
-	/* Check if all the files exist. */
+	if (result.count("autonumber"))
+	{
+		if (track_set)
+		{
+			cerr << "ERROR: Track and autonumber cannot both be used at the same time." << endl;
+			exit(1);
+		}
+		autonumber_set = true;
+		autonumber = result["autonumber"].as<int>();
+		cout << "Autonumbering from " << autonumber << endl;
+	}
+	
+	// Check if all the files exist.
 	bool file_error = false;
 	for (const auto& file : input_files)
 	{
@@ -202,6 +218,12 @@ int main(int argc, char **argv)
 		{	
 			verified_file.tag()->setYear(year);
 			modified = true;
+		}
+		if (autonumber_set)
+		{
+			verified_file.tag()->setTrack(autonumber);
+			modified = true;
+			autonumber++;
 		}
 		if (!dry_run_flag && modified)
 		{
