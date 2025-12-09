@@ -12,9 +12,9 @@
 
 using namespace std;
 
-static bool dry_run_flag;
-static bool print_flag;
-static bool verbose_flag;
+static bool dry_run_flag = false;
+static bool print_flag = false;
+static bool verbose_flag = false;
 
 void print_help_info()
 {
@@ -103,9 +103,9 @@ int main(int argc, char **argv)
 	string genre;
 	string title;
 	int track;
-	bool track_set;
+	bool track_set = false;
 	int year;
-	bool year_set;
+	bool year_set = false;
 
 	if (result.count("artist"))
 	{
@@ -164,19 +164,38 @@ int main(int argc, char **argv)
 
 	for (auto verified_file : verified_files)
 	{
+		bool modified = false;
 		if (!artist.empty())
+		{
 			verified_file.tag()->setArtist(artist);
+			modified = true;
+		}
 		if (!album.empty())
+		{
 			verified_file.tag()->setAlbum(album);
+			modified = true;
+		}
 		if (!genre.empty())
+		{
 			verified_file.tag()->setGenre(genre);
+			modified = true;
+		}
 		if (!title.empty())
+		{
 			verified_file.tag()->setTitle(title);
+			modified = true;
+		}
 		if (track_set)
+		{
 			verified_file.tag()->setTrack(track);
+			modified = true;
+		}
 		if (year_set)
+		{	
 			verified_file.tag()->setYear(year);
-		if (!dry_run_flag)
+			modified = true;
+		}
+		if (!dry_run_flag && modified)
 		{
 			if (!verified_file.save())
 				cerr << "ERROR: Failed to save metadata for: " << verified_file.file()->name() << endl;

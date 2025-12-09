@@ -55,11 +55,12 @@ enum class MimeType
 	// RIFF,
 	S3M,
 	SHORTEN,
-	TTA,
+	TrueAudio,
 	// WAV,
 	WAVPACK,
 	WMA,
 	XM,
+	Directory,
 	UNKNOWN,
 };
 
@@ -92,12 +93,13 @@ MimeType mime_from_string(const std::string& mime) {
 			to be saved to disk. I need to add another function like the
 			Ogg codec detection to figure out what these files are. */
 		// {"application/octet-stream", MimeType::TTA},
-		{"audio/x-tta", MimeType::TTA},
+		{"audio/x-tta", MimeType::TrueAudio},
 		// {"audio/wav", MimeType::WAV},
 		// {"audio/x-wav", MimeType::WAV},
 		{"audio/x-wavpack", MimeType::WAVPACK},
 		{"audio/x-ms-wma", MimeType::WMA},
 		{"audio/x-xm", MimeType::XM},
+		{"inode/directory", MimeType::Directory},
 	};
 
 	auto mime_type = mime_map.find(mime);
@@ -154,6 +156,13 @@ MimeType detect_octet_codec(const char* fileName)
 
 	std::string sig(header, input_file.gcount());
 	if (sig.find("wvpk") != std::string::npos) return MimeType::WAVPACK;
+	else if (sig.find("TTA1") != std::string::npos) return MimeType::TrueAudio;
+	/*
+		Extra processing is needed to detect TTA files with metadata.
+		This is a more gnarly problem to solve because it seems like
+		the ID3 metadata block can push back the actual TTA1 signature
+		back to varying degrees depending on how much metadata is written.
+	*/
 	else return MimeType::UNKNOWN;
 }
 
@@ -195,6 +204,8 @@ class MimeResolver : public TagLib::FileRef::FileTypeResolver
 				{
 					case MimeType::WAVPACK:
 						return new TagLib::WavPack::File(fileName, readAudioProperties, style);
+					case MimeType::TrueAudio:
+						return new TagLib::TrueAudio::File(fileName, readAudioProperties, style);
 					default:
 						std::cerr << "ERROR: Unknown MIME type: " << mime << std::endl;
 						std::cerr << "File: " << fileName << std::endl;
@@ -228,7 +239,7 @@ class MimeResolver : public TagLib::FileRef::FileTypeResolver
 				return new TagLib::S3M::File(fileName, readAudioProperties, style);
 			case MimeType::SHORTEN:
 				return new TagLib::Shorten::File(fileName, readAudioProperties, style);
-			case MimeType::TTA:
+			case MimeType::TrueAudio:
 				return new TagLib::TrueAudio::File(fileName, readAudioProperties, style);
 			case MimeType::WAVPACK:
 				return new TagLib::WavPack::File(fileName, readAudioProperties, style);
@@ -236,6 +247,8 @@ class MimeResolver : public TagLib::FileRef::FileTypeResolver
 				return new TagLib::ASF::File(fileName, readAudioProperties, style);
 			case MimeType::XM:
 				return new TagLib::XM::File(fileName, readAudioProperties, style);
+			case MimeType::Directory:
+				return nullptr;
 			default:
 				std::cerr << "ERROR: Unkown MIME type: " << mime << std::endl;
 				std::cerr << "File: " << fileName << std::endl;
