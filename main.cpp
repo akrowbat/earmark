@@ -90,10 +90,13 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
+	if (result.count("dry-run"))
+		dry_run_flag = true;
 	if (result.count("print"))
 		print_flag = true;
 	if (result.count("verbose"))
 		verbose_flag = true;
+
 
 	string album;
 	string artist;
@@ -143,14 +146,16 @@ int main(int argc, char **argv)
 	}
 	
 	/* Check if all the files exist. */
+	bool file_error = false;
 	for (const auto& file : input_files)
 	{
 		if (!filesystem::exists(file.c_str()))
 		{
 			cerr << "File not found: " << file << endl;
-			exit(1);
+			file_error = true;
 		}
 	}
+	if (file_error) exit(1);
 
 	// For loop that verifies MIME types before operations
 	std::vector<TagLib::FileRef> verified_files;

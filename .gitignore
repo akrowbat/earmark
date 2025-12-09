@@ -1,4 +1,5 @@
 build/
+debug/
 test-songs/
 *.flac
 *.mp3
