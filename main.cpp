@@ -103,30 +103,38 @@ int main(int argc, char **argv)
 	string genre;
 	string title;
 	int track;
-	bool track_set = false;
 	int year;
+	bool album_set = false;
+	bool artist_set = false;
+	bool genre_set = false;
+	bool title_set = false;
+	bool track_set = false;
 	bool year_set = false;
 
 	if (result.count("artist"))
 	{
+		artist_set = true;
 		artist = result["artist"].as<string>();
 		cout << "Artist value: " << artist << endl;
 	}
 	
 	if (result.count("album"))
 	{
+		album_set = true;
 		album = result["album"].as<string>();
 		cout << "Album value: " << album << endl;
 	}
 	
 	if (result.count("genre"))
 	{
+		genre_set = true;
 		genre = result["genre"].as<string>();
 		cout << "Genre value: " << genre << endl;
 	}
 	
 	if (result.count("title"))
 	{
+		title_set = true;
 		title = result["title"].as<string>();
 		cout << "Title value: " << title << endl;
 	}
@@ -165,22 +173,22 @@ int main(int argc, char **argv)
 	for (auto verified_file : verified_files)
 	{
 		bool modified = false;
-		if (!artist.empty())
+		if (artist_set)
 		{
 			verified_file.tag()->setArtist(artist);
 			modified = true;
 		}
-		if (!album.empty())
+		if (album_set)
 		{
 			verified_file.tag()->setAlbum(album);
 			modified = true;
 		}
-		if (!genre.empty())
+		if (genre_set)
 		{
 			verified_file.tag()->setGenre(genre);
 			modified = true;
 		}
-		if (!title.empty())
+		if (title_set)
 		{
 			verified_file.tag()->setTitle(title);
 			modified = true;
