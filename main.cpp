@@ -46,6 +46,24 @@ void print_tags(const char* filename)
 
 int main(int argc, char **argv)
 {
+
+	struct {
+		string album;
+		string artist;
+		string genre;
+		string title;
+		int track;
+		int year;
+		int autonumber;
+		bool album_set = false;
+		bool artist_set = false;
+		bool genre_set = false;
+		bool title_set = false;
+		bool track_set = false;
+		bool year_set = false;
+		bool autonumber_set = false;
+	} terminal_args;
+
 	TagLib::FileRef::addFileTypeResolver(new MimeResolver());
 
 	cxxopts::Options options("earmark", "Edit audio metadata");
@@ -99,74 +117,51 @@ int main(int argc, char **argv)
 	if (result.count("verbose"))
 		verbose_flag = true;
 
-
-	string album;
-	string artist;
-	string genre;
-	string title;
-	int track;
-	int year;
-	int autonumber;
-	bool album_set = false;
-	bool artist_set = false;
-	bool genre_set = false;
-	bool title_set = false;
-	bool track_set = false;
-	bool year_set = false;
-	bool autonumber_set = false;
-
 	if (result.count("artist"))
 	{
-		artist_set = true;
-		artist = result["artist"].as<string>();
-		cout << "Artist value: " << artist << endl;
+		terminal_args.artist_set = true;
+		terminal_args.artist = result["artist"].as<string>();
 	}
 	
 	if (result.count("album"))
 	{
-		album_set = true;
-		album = result["album"].as<string>();
-		cout << "Album value: " << album << endl;
+		terminal_args.album_set = true;
+		terminal_args.album = result["album"].as<string>();
 	}
 	
 	if (result.count("genre"))
 	{
-		genre_set = true;
-		genre = result["genre"].as<string>();
-		cout << "Genre value: " << genre << endl;
+		terminal_args.genre_set = true;
+		terminal_args.genre = result["genre"].as<string>();
 	}
 	
 	if (result.count("title"))
 	{
-		title_set = true;
-		title = result["title"].as<string>();
-		cout << "Title value: " << title << endl;
+		terminal_args.title_set = true;
+		terminal_args.title = result["title"].as<string>();
 	}
 	
 	if (result.count("track"))
 	{
-		track_set = true;
-		track = result["track"].as<int>();
-		cout << "Track value: " << track << endl;
+		terminal_args.track_set = true;
+		terminal_args.track = result["track"].as<int>();
 	}
 	
 	if (result.count("year"))
 	{
-		year_set = true;
-		year = result["year"].as<int>();
-		cout << "Year value: " << year << endl;
+		terminal_args.year_set = true;
+		terminal_args.year = result["year"].as<int>();
 	}
 	
 	if (result.count("autonumber"))
 	{
-		if (track_set)
+		if (terminal_args.track_set)
 		{
 			cerr << "ERROR: Track and autonumber cannot both be used at the same time." << endl;
 			exit(1);
 		}
-		autonumber_set = true;
-		autonumber = result["autonumber"].as<int>();
-		cout << "Autonumbering from " << autonumber << endl;
+		terminal_args.autonumber_set = true;
+		terminal_args.autonumber = result["autonumber"].as<int>();
 	}
 	
 	// Check if all the files exist.
@@ -189,41 +184,41 @@ int main(int argc, char **argv)
 	for (auto verified_file : verified_files)
 	{
 		bool modified = false;
-		if (artist_set)
+		if (terminal_args.artist_set)
 		{
-			verified_file.tag()->setArtist(artist);
+			verified_file.tag()->setArtist(terminal_args.artist);
 			modified = true;
 		}
-		if (album_set)
+		if (terminal_args.album_set)
 		{
-			verified_file.tag()->setAlbum(album);
+			verified_file.tag()->setAlbum(terminal_args.album);
 			modified = true;
 		}
-		if (genre_set)
+		if (terminal_args.genre_set)
 		{
-			verified_file.tag()->setGenre(genre);
+			verified_file.tag()->setGenre(terminal_args.genre);
 			modified = true;
 		}
-		if (title_set)
+		if (terminal_args.title_set)
 		{
-			verified_file.tag()->setTitle(title);
+			verified_file.tag()->setTitle(terminal_args.title);
 			modified = true;
 		}
-		if (track_set)
+		if (terminal_args.track_set)
 		{
-			verified_file.tag()->setTrack(track);
+			verified_file.tag()->setTrack(terminal_args.track);
 			modified = true;
 		}
-		if (year_set)
+		if (terminal_args.year_set)
 		{	
-			verified_file.tag()->setYear(year);
+			verified_file.tag()->setYear(terminal_args.year);
 			modified = true;
 		}
-		if (autonumber_set)
+		if (terminal_args.autonumber_set)
 		{
-			verified_file.tag()->setTrack(autonumber);
+			verified_file.tag()->setTrack(terminal_args.autonumber);
 			modified = true;
-			autonumber++;
+			terminal_args.autonumber++;
 		}
 		if (!dry_run_flag && modified)
 		{
