@@ -13,7 +13,6 @@ Once all of that's done, you can build by running this in the repository directo
 Using earmark is very simple. It takes arguments for specific tag types like artist, genre, track, album, and so on, and treats the following argument as the value for that tag. For instance, `earmark --genre "Metal" *.mp3` will change all mp3 files in the working directory to have Metal for the genre tag. You can also use short options combined like `earmark -pa "Iron Maiden" "Aces High.flac"`. The -p means print out all the tag information after any file operations are done, and the -a means that earmark will change the artist value. Short options that require arguments cannot be combined, so if you're changing more than one value at a time, you have to separate them like so: `earmark -g Metal -a "Iron Maiden"`
 
 # Known Issues
-* At least one memory leak
 * Assigning the same tag more than once results in the last one being assigned
 
 # TODO
