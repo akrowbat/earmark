@@ -137,15 +137,6 @@ MimeType detect_ogg_codec(const char* fileName)
 
 	std::string sig(buffer, input_file.gcount());
 
-	/* Debugging stuff here. I still need to figure out
-		exactly how this code is working, what the boundaries
-		between these character arrays are and how they're
-		reading stuff.
-	std::cout << header << std::endl;
-	std::cout << buffer << std::endl;
-	std::cout << sig << std::endl;
-	*/
-
 	if (sig.find("vorbis") != std::string::npos) return MimeType::OGG_VORBIS;
 	else if (sig.find("OpusHead") != std::string::npos) return MimeType::OGG_OPUS;
 	else if (sig.find("fLaC") != std::string::npos) return MimeType::OGG_FLAC;
