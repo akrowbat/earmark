@@ -10,48 +10,46 @@
 
 #include "modules/filetype.cpp"
 
-using namespace std;
-
 static bool dry_run_flag = false;
 static bool print_flag = false;
 static bool verbose_flag = false;
 
 void print_help_info()
 {
-	cout << "Usage: earmark [OPTION]... [FILE]..." << endl;
-	cout << "Modify or print metadata from audio files" << endl << endl;
-	cout << "	-a, --artist   set artist tag for input files" << endl;
-	cout << "	-g, --genre    set genre tag for input files" << endl;
-	cout << "	-l, --album    set album tag for input files" << endl;
-	cout << "	-k, --track    set track tag for input files" << endl;
-	cout << "	-t, --title    set title tag for input files" << endl;
-	cout << "	--autonumber   autonumber tracks from specified number" << endl;
-	cout << "	--strip        remove all tag data before processing" << endl;
-	cout << "	-p, --print    print out audio metadata after processing" << endl;
-	cout << "	-h  --help     display this help and exit" << endl;
+	std::cout << "Usage: earmark [OPTION]... [FILE]..." << "\n";
+	std::cout << "Modify or print metadata from audio files" << "\n" << "\n";
+	std::cout << "	-a, --artist   set artist tag for input files" << "\n";
+	std::cout << "	-g, --genre    set genre tag for input files" << "\n";
+	std::cout << "	-l, --album    set album tag for input files" << "\n";
+	std::cout << "	-k, --track    set track tag for input files" << "\n";
+	std::cout << "	-t, --title    set title tag for input files" << "\n";
+	std::cout << "	--autonumber   autonumber tracks from specified number" << "\n";
+	std::cout << "	--strip        remove all tag data before processing" << "\n";
+	std::cout << "	-p, --print    print out audio metadata after processing" << "\n";
+	std::cout << "	-h  --help     display this help and exit" << "\n";
 
-	cout << endl << "Examples:" << endl;
-	cout << "	earmark -pa \"Led Zeppelin\" \"Stairway to Heaven.mp3\"" << endl;
-	cout << "	earmark --genre Rock *.flac" << endl;
+	std::cout << "\n" << "Examples:" << "\n";
+	std::cout << "	earmark -pa \"Led Zeppelin\" \"Stairway to Heaven.mp3\"" << "\n";
+	std::cout << "	earmark --genre Rock *.flac" << "\n";
 }
 
 void print_tags(const char* filename)
 {
 	TagLib::FileRef input_file(filename);
 	TagLib::PropertyMap properties = input_file.properties();
-	cout << endl << "File: " << filename << endl;
+	std::cout << "\n" << "File: " << filename << "\n";
 	for (const auto& property : properties)
-		cout << property.first << ": " << properties.value(property.first) << endl;
+		std::cout << property.first << ": " << properties.value(property.first) << "\n";
 }
 
 int main(int argc, char **argv)
 {
 
 	struct {
-		string album;
-		string artist;
-		string genre;
-		string title;
+		std::string album;
+		std::string artist;
+		std::string genre;
+		std::string title;
 		int track;
 		int year;
 		int autonumber;
@@ -70,16 +68,16 @@ int main(int argc, char **argv)
 
 	options.add_options()
 		// Tag section
-		("a,artist",    "Param artist", cxxopts::value<string>())
-		("g,genre",     "Param genre", cxxopts::value<string>())
+		("a,artist",    "Param artist", cxxopts::value<std::string>())
+		("g,genre",     "Param genre", cxxopts::value<std::string>())
 		("k,track",     "Param track number", cxxopts::value<int>())
-		("l,album",     "Param album", cxxopts::value<string>())
-		("t,title",     "Param title", cxxopts::value<string>())
+		("l,album",     "Param album", cxxopts::value<std::string>())
+		("t,title",     "Param title", cxxopts::value<std::string>())
 		("y,year",      "Param year", cxxopts::value<int>())
 		("autonumber",  "Number all tracks from starting value", cxxopts::value<int>())
 		/* I'm not sure how I'm going to set up a property map argument
 			that can separate well from the input_files vector */
-		// ("m,property",  "Param property map", cxxopts::value<vector<string>>())
+		// ("m,property",  "Param property map", cxxopts::value<std::vector<std::string>>())
 		// Flag section
 		("strip",       "Remove all metadata", cxxopts::value<bool>())
 		("p,print",     "Print tags", cxxopts::value<bool>())
@@ -87,7 +85,7 @@ int main(int argc, char **argv)
 		("v,verbose",   "More output")
 		("h,help",      "Print usage")
 		//
-		("input_files", "Input files", cxxopts::value<vector<string>>())
+		("input_files", "Input files", cxxopts::value<std::vector<std::string>>())
 	;
 
 	options.parse_positional({"input_files"});
@@ -100,13 +98,13 @@ int main(int argc, char **argv)
 		exit(0);
 	}
 
-	vector<string> input_files;
+	std::vector<std::string> input_files;
 	if (result.count("input_files"))
-		input_files = result["input_files"].as<vector<string>>();
+		input_files = result["input_files"].as<std::vector<std::string>>();
 	if (input_files.empty())
 	{
-		cerr << "earmark: missing file operand" << endl;
-		cerr << "Try 'earmark --help' for more information." << endl;
+		std::cerr << "earmark: missing file operand" << "\n";
+		std::cerr << "Try 'earmark --help' for more information." << "\n";
 		exit(1);
 	}
 
@@ -120,25 +118,25 @@ int main(int argc, char **argv)
 	if (result.count("artist"))
 	{
 		terminal_args.artist_set = true;
-		terminal_args.artist = result["artist"].as<string>();
+		terminal_args.artist = result["artist"].as<std::string>();
 	}
 	
 	if (result.count("album"))
 	{
 		terminal_args.album_set = true;
-		terminal_args.album = result["album"].as<string>();
+		terminal_args.album = result["album"].as<std::string>();
 	}
 	
 	if (result.count("genre"))
 	{
 		terminal_args.genre_set = true;
-		terminal_args.genre = result["genre"].as<string>();
+		terminal_args.genre = result["genre"].as<std::string>();
 	}
 	
 	if (result.count("title"))
 	{
 		terminal_args.title_set = true;
-		terminal_args.title = result["title"].as<string>();
+		terminal_args.title = result["title"].as<std::string>();
 	}
 	
 	if (result.count("track"))
@@ -157,7 +155,7 @@ int main(int argc, char **argv)
 	{
 		if (terminal_args.track_set)
 		{
-			cerr << "ERROR: Track and autonumber cannot both be used at the same time." << endl;
+			std::cerr << "ERROR: Track and autonumber cannot both be used at the same time." << "\n";
 			exit(1);
 		}
 		terminal_args.autonumber_set = true;
@@ -168,9 +166,9 @@ int main(int argc, char **argv)
 	bool file_error = false;
 	for (const auto& file : input_files)
 	{
-		if (!filesystem::exists(file.c_str()))
+		if (!std::filesystem::exists(file.c_str()))
 		{
-			cerr << "File not found: " << file << endl;
+			std::cerr << "File not found: " << file << "\n";
 			file_error = true;
 		}
 	}
@@ -223,7 +221,7 @@ int main(int argc, char **argv)
 		if (!dry_run_flag && modified)
 		{
 			if (!verified_file.save())
-				cerr << "ERROR: Failed to save metadata for: " << verified_file.file()->name() << endl;
+				std::cerr << "ERROR: Failed to save metadata for: " << verified_file.file()->name() << "\n";
 		}
 	}
 
