@@ -65,6 +65,7 @@ enum class MimeType
 	// Ignore types
 	Directory,
 	Image,
+	PlainText,
 };
 
 MimeType mime_from_string(const std::string& mime) {
@@ -164,6 +165,7 @@ MimeType mime_from_string(const std::string& mime) {
 		{"image/x-xbitmap", MimeType::Image},
 		{"image/x-xpixmap", MimeType::Image},
 		{"image/x-xwindowdump", MimeType::Image},
+		{"text/plain", MimeType::PlainText},
 	};
 
 	auto mime_type = mime_map.find(mime);
@@ -314,6 +316,8 @@ class MimeResolver : public TagLib::FileRef::FileTypeResolver
 			case MimeType::Directory:
 				return nullptr;
 			case MimeType::Image:
+				return nullptr;
+			case MimeType::PlainText:
 				return nullptr;
 			default:
 				std::cerr << "ERROR: Unkown MIME type: " << mime << std::endl;
