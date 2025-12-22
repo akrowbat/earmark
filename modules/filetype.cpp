@@ -26,6 +26,7 @@
 #include <magic.h>
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <iostream>
 #include <fstream>
@@ -60,8 +61,10 @@ enum class MimeType
 	WAVPACK,
 	WMA,
 	XM,
-	Directory,
 	UNKNOWN,
+	// Ignore types
+	Directory,
+	Image,
 };
 
 MimeType mime_from_string(const std::string& mime) {
@@ -99,7 +102,68 @@ MimeType mime_from_string(const std::string& mime) {
 		{"audio/x-wavpack", MimeType::WAVPACK},
 		{"audio/x-ms-wma", MimeType::WMA},
 		{"audio/x-xm", MimeType::XM},
+		// Ignore-type section
 		{"inode/directory", MimeType::Directory},
+		{"image/avif", MimeType::Image},
+		{"image/avif-sequence", MimeType::Image},
+		{"image/bmp", MimeType::Image},
+		{"image/cgm", MimeType::Image},
+		{"image/g3fax", MimeType::Image},
+		{"image/gif", MimeType::Image},
+		{"image/heic", MimeType::Image},
+		{"image/ief", MimeType::Image},
+		{"image/jpeg", MimeType::Image},
+		{"image/pjpeg", MimeType::Image},
+		{"image/png", MimeType::Image},
+		{"image/prs.btif", MimeType::Image},
+		{"image/svg+xml", MimeType::Image},
+		{"image/tiff", MimeType::Image},
+		{"image/vnd.adobe.photoshop", MimeType::Image},
+		{"image/vnd.djvu", MimeType::Image},
+		{"image/vnd.dwg", MimeType::Image},
+		{"image/vnd.dxf", MimeType::Image},
+		{"image/vnd.fastbidsheet", MimeType::Image},
+		{"image/vnd.fpx", MimeType::Image},
+		{"image/vnd.fst", MimeType::Image},
+		{"image/vnd.fujixerox.edmics-mmr", MimeType::Image},
+		{"image/vnd.fujixerox.edmics-rlc", MimeType::Image},
+		{"image/vnd.ms-modi", MimeType::Image},
+		{"image/vnd.net-fpx", MimeType::Image},
+		{"image/vnd.wap.wbmp", MimeType::Image},
+		{"image/vnd.xiff", MimeType::Image},
+		{"image/webp", MimeType::Image},
+		{"image/x-adobe-dng", MimeType::Image},
+		{"image/x-canon-cr2", MimeType::Image},
+		{"image/x-canon-crw", MimeType::Image},
+		{"image/x-cmu-raster", MimeType::Image},
+		{"image/x-cmx", MimeType::Image},
+		{"image/x-epson-erf", MimeType::Image},
+		{"image/x-freehand", MimeType::Image},
+		{"image/x-fuji-raf", MimeType::Image},
+		{"image/x-icns", MimeType::Image},
+		{"image/x-icon", MimeType::Image},
+		{"image/x-kodak-dcr", MimeType::Image},
+		{"image/x-kodak-k25", MimeType::Image},
+		{"image/x-kodak-kdc", MimeType::Image},
+		{"image/x-minolta-mrw", MimeType::Image},
+		{"image/x-nikon-nef", MimeType::Image},
+		{"image/x-olympus-orf", MimeType::Image},
+		{"image/x-panasonic-raw", MimeType::Image},
+		{"image/x-pcx", MimeType::Image},
+		{"image/x-pentax-pef", MimeType::Image},
+		{"image/x-pict", MimeType::Image},
+		{"image/x-portable-anymap", MimeType::Image},
+		{"image/x-portable-bitmap", MimeType::Image},
+		{"image/x-portable-graymap", MimeType::Image},
+		{"image/x-portable-pixmap", MimeType::Image},
+		{"image/x-rgb", MimeType::Image},
+		{"image/x-sigma-x3f", MimeType::Image},
+		{"image/x-sony-arw", MimeType::Image},
+		{"image/x-sony-sr2", MimeType::Image},
+		{"image/x-sony-srf", MimeType::Image},
+		{"image/x-xbitmap", MimeType::Image},
+		{"image/x-xpixmap", MimeType::Image},
+		{"image/x-xwindowdump", MimeType::Image},
 	};
 
 	auto mime_type = mime_map.find(mime);
@@ -248,6 +312,8 @@ class MimeResolver : public TagLib::FileRef::FileTypeResolver
 			case MimeType::XM:
 				return new TagLib::XM::File(fileName, readAudioProperties, style);
 			case MimeType::Directory:
+				return nullptr;
+			case MimeType::Image:
 				return nullptr;
 			default:
 				std::cerr << "ERROR: Unkown MIME type: " << mime << std::endl;

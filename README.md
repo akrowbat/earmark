@@ -5,7 +5,7 @@ Earmark is extremely barebones right now, and I don't recommend running it until
 
 # Build
 Building earmark requires libmagic, TagLib, and [cxxopts](https://github.com/jarro2783/cxxopts).
-If you're on a Debian based system, you can run `sudo apt update && sudo apt install zlib1g-dev libutfcpp-dev libmagic-dev` to install the basic dependencies. Then you'll need to [build TagLib](https://github.com/taglib/taglib/blob/master/INSTALL.md) and install it. You'll also need to install the cxxopts headers into your include directory (you just need the include/cxxopts.hpp file). The easiest way to install it is running `sudo wget -O /usr/local/include/cxxopts.hpp https://raw.githubusercontent.com/jarro2783/cxxopts/refs/heads/master/include/cxxopts.hpp`
+If you're on a Debian based system, you can run `sudo apt update && sudo apt install zlib1g-dev libutfcpp-dev libmagic-dev` to install the basic dependencies. Then you'll need to [build TagLib](https://github.com/taglib/taglib/blob/master/INSTALL.md) and install it (your distribution may have TagLib in the repositories; mine does not). You'll also need to install the cxxopts headers into your include directory (you just need the include/cxxopts.hpp file). The easiest way to install it is running `sudo wget -O /usr/local/include/cxxopts.hpp https://raw.githubusercontent.com/jarro2783/cxxopts/refs/heads/master/include/cxxopts.hpp`
 
 Once all of that's done, you can build by running this in the repository directory: `mkdir build; cd build; cmake ..; make`
 
