@@ -166,6 +166,7 @@ MimeType mime_from_string(const std::string& mime) {
 		{"image/x-xpixmap", MimeType::Image},
 		{"image/x-xwindowdump", MimeType::Image},
 		{"text/plain", MimeType::PlainText},
+		{"text/xml", MimeType::PlainText},
 	};
 
 	auto mime_type = mime_map.find(mime);
